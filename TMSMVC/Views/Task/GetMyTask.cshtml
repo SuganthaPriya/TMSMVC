@@ -1,0 +1,56 @@
+﻿@model IEnumerable<TMSMVC.ViewModel.TaskView>
+@{
+    Layout = "~/Views/Shared/_TabView.cshtml";
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>GetMyTask</title>
+</head>
+<body>
+    <div class="container">
+        <table class="table table-bordered table-hover" id="myTable">
+            <thead>
+                <tr>
+                    <th>
+                        ID
+                    </th>
+                    <th>
+                        Task Name
+                    </th>
+                    <th>
+                        Status
+                    </th>
+                    <th>
+                        Priority
+                    </th>
+                    <th>
+                        Assigned Date
+                    </th>
+                    <th>
+                        Due Date
+                    </th>
+                </tr>
+            </thead>
+
+            <tbody class="tbody">
+
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.TaskID</td>
+                        <td>@item.TaskName</td>
+                        <td>@item.StatusName</td>
+                        <td>@item.PriorityName</td>
+                        <td>@item.AssignedDate</td>
+                        <td>@item.DueDate</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

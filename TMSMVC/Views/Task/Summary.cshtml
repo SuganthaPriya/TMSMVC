@@ -1,0 +1,43 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <link href="~/Styles/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/Styles/font-awesome.min.css" rel="stylesheet" />
+    <title>View</title>
+    <script src="~/Scripts/jquery-1.10.2.min.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+    <script>
+       $(function () {
+        var chart = new CanvasJS.Chart("chartContainer", {
+            theme: "light2",
+            animationEnabled: true,
+            title: {
+                text: "Column Chart in ASP.Net MVC using CanvasJS"
+            },
+            data: [
+            {
+                type: "column",
+                //You can add dynamic data from the controller as shown below. Check the controller and uncomment the line which generates dataPoints.
+                dataPoints: @Html.Raw(ViewBag.DataPoints)
+            }
+            ]
+        });
+        chart.render();
+    });
+    </script>
+    <style>
+    </style>
+</head>
+<body>
+    <div id="chartContainer"></div>
+</body>
+</html>
+

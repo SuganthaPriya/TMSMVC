@@ -1,0 +1,233 @@
+﻿@{
+    Layout = "~/Views/Shared/_TabView.cshtml";
+}
+@using TMSMVC.ViewModel
+@model TMSMVC.ViewModel.CommonView
+@{
+    ViewBag.Title = "TaskList";
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Index</title>
+    <script src="~/Scripts/jquery-1.10.2.js"></script>
+    <script src="~/Scripts/bootstrap.js"></script>
+    <link href="~/Content/bootstrap.css" rel="stylesheet" />
+    @* <script src="~/Scripts/jquery.unobtrusive-ajax.js"></script>*@
+    <script src="~/Scripts/Task.js"></script>
+
+</head>
+<body>
+    <br />
+    <br />
+    <div class="container">
+        <table class="table table-bordered table-hover" id="myTable">
+            <thead>
+                <tr>
+                    <th>
+                        ID
+                    </th>
+                    <th>
+                        Task Name
+                    </th>
+                    <th>
+                        Status
+                    </th>
+                    <th>
+                        Priority
+                    </th>
+                    <th>
+                        Assignee
+                    </th>
+                    <th>
+                        Assigned Date
+                    </th>
+                    <th>
+                        Due Date
+                    </th>
+                    <th>
+                        Actions
+                    </th>
+                </tr>
+            </thead>
+
+            <tbody class="tbody">
+
+                @foreach (TMSMVC.ViewModel.TaskView item in Model.TaskView)
+              {
+                    <tr>
+                        <td>@item.TaskID</td>
+                        <td>@item.TaskName</td>
+                        <td>@item.StatusName</td>
+                        <td>@item.PriorityName</td>
+                        <td>@item.UserName</td>
+                        <td>@item.AssignedDate</td>
+                        <td>@item.DueDate</td>
+                        <td>
+                            <input type="button" value="Delete" class="btnStatus" onclick="location.href='@Url.Action("DeleteTask", "Task", new { TaskID=item.TaskID})'" />
+                            <button type="button" class="btnStatus" onclick="retain('@item.TaskID','@item.TaskName','@item.UserName','@Session["UserName"].ToString()','@item.AssignedDate','@item.DueDate','@item.StatusName','@item.PriorityName');">Edit Task</button><br /><br />
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    @using (Html.BeginForm("AddNewTask", "Task", FormMethod.Post))
+    {
+    <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <button type="button" class="btn btn-primary" align="center" data-toggle="modal" data-target="#myModal" onclick="clearTextBox();">Add New Task</button></div>
+        <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title" id="myModalLabel">Add Task</h4>
+                    </div>
+                    <div class="modal-body">
+                        <form>
+
+                            <div class="form-group">
+                                <label for="TaskName">Task Name</label>
+                                @Html.EditorFor(model => model.TaskCreate.TaskName, new { htmlAttributes = new { @class = "form-control TaskName" }, @placeholder = "Task Name" })
+                                @Html.ValidationMessageFor(model => model.TaskCreate.TaskName, "", new { @class = "text-danger" })
+                            </div>
+
+                            <div class="form-group">
+                                <label for="Assignee">Assignee</label>
+                                @Html.DropDownListFor(x => x.TaskCreate.SelectedAssignee, new SelectList(Model.Users.Select(x => x.UserName)), "--Select Assignee--",  new {  @class = "form-control Assignee" })
+                                @Html.ValidationMessageFor(model => model.TaskCreate.SelectedAssignee, "", new { @class = "text-danger" })
+                            </div>
+                            <div class="form-group">
+                                <label for="Assigner">Assigner</label>
+                                @Html.EditorFor(model => model.TaskCreate.SelectedAssigner, new { htmlAttributes = new { @Value = @Session["UserName"].ToString(), @readonly = "readonly" } })
+                                @Html.ValidationMessageFor(model => model.TaskCreate.SelectedAssigner, "", new { @class = "text-danger" })
+                            </div>
+
+                            <div class="form-group">
+                                <label for="AssignedDate">Assigned Date</label>
+                                @Html.EditorFor(model => model.TaskCreate.AssignedDate, "{0:dd-MM-yyyy}", new { htmlAttributes = new { @class = "form-control AssignedDate" } })
+                                @Html.ValidationMessageFor(model => model.TaskCreate.AssignedDate, "", new { @class = "text-danger" })
+                            </div>
+
+                            <div class="form-group">
+                                <label for="DueDate">DueDate</label>
+                                @Html.EditorFor(model => model.TaskCreate.DueDate, "{0:dd-MM-yyyy}", new { htmlAttributes = new { @class = "form-control Duedate" } })
+                                @Html.ValidationMessageFor(model => model.TaskCreate.DueDate, "", new { @class = "text-danger" })
+                            </div>
+
+                            <div class="form-group">
+                                <label for="Status">Status</label>
+                                @Html.DropDownListFor(x => x.TaskCreate.SelectedStatus, new SelectList(Model.Status.Select(x => x.StatusName)), "--Select Status--", new { @class = "form-control Status" } )
+                                @Html.ValidationMessageFor(model => model.TaskCreate.SelectedStatus, "", new { @class = "text-danger" })
+
+                            </div>
+                            <div class="form-group">
+                                <label for="Priority">Priority</label>
+                                @Html.DropDownListFor(x => x.TaskCreate.SelectedPriority, new SelectList(Model.Priority.Select(x => x.PriorityName)), "--Select Priority--", new { @class = "form-control Priority" } )
+                                @Html.ValidationMessageFor(model => model.TaskCreate.SelectedPriority, "", new { @class = "text-danger" })
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <input type="submit" id="btnAdd" value="Add" />
+                        <button type="button" class="btn btn-primary" id="btnUpdate" style="display:none;" onclick="Update();">Update</button>
+                        <button type="button" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</body>
+</html>
+<script>
+    var task_id;
+    function retain(TaskID, TaskName, AssignerName, AssigneeName, AssignedDate, DueDate, StatusName, PriorityName) {
+        debugger;
+        task_id = TaskID;
+        $('#myModal').modal('show');
+     
+        $('.TaskName').val(TaskName);
+        $('.Assignee').val(AssigneeName);
+        $('.AssignedDate').val(AssignedDate);
+         $('.Priority').val(PriorityName);
+         $('.Duedate').val(DueDate);
+         $('.Status').val(StatusName);
+        $('#btnUpdate').show();
+        $('#btnAdd').hide();
+    
+    function Update()
+    {
+    $.ajax({
+        url: "/Task/EditTask/",
+        data: {
+            TaskID: task_id,
+             TaskName: $('.TaskName').val(),
+            AssigneeName: $('.Assignee').val(),
+            AssignedDate:$('.AssignedDate').val(),
+            PriorityName: $('.Priority').val(),
+            DueDate: $('.Duedate').val(),
+            StatusName: $('.Status').val()
+
+        },
+        type: "POST",
+        contentType: "application/json;charset=UTF-8",
+        dataType: "json",
+        success: function () {
+
+    }
+    });
+    }
+        
+
+        //        $("#Assignee").append($('<option></option>').attr('value', result.Assignee[i].Value).text(result.Assignee[i].Text).prop('selected', true));
+
+        //        $("#Assignee").append($('<option></option>').attr('value', result.Assignee[i].Value).text(result.Assignee[i].Text));
+
+        //'#AssignedDate').val(result.AssignedDate);
+        //$("#DueDate").empty();
+
+
+
+        //var date = new Date(parseInt(result.DueDate.substr(6)));
+        //var DueDate = (date.getMonth() + 1) + '/' + date.getDate() + '/' + date.getFullYear();
+        //alert(DueDate);
+        //$('#Duedate').val(DueDate);
+
+
+
+        //$("#Status").empty();
+        //$("#Priority").empty();
+        //for (var i = 0; i < result.Status.length; i++) {
+        //    if (result.Status[i].Selected == true) {
+        //        $("#Status").append($('<option></option>').attr('value', result.Status[i].Value).text(result.Status[i].Text).prop('selected', true));
+        //    }
+        //    else {
+        //        $("#Status").append($('<option></option>').attr('value', result.Status[i].Value).text(result.Status[i].Text));
+        //    }
+        //}
+
+        //for (var i = 0; i < result.Priority.length; i++) {
+        //    //$("#Status").append("<option>" + result.Status[i].Text + "</option>");
+        //    if (result.Priority[i].Selected == true) {
+        //        $("#Priority").append($('<option></option>').attr('value', result.Priority[i].Value).text(result.Priority[i].Text).prop('selected', true));
+        //    }
+        //    else {
+        //        $("#Priority").append($('<option></option>').attr('value', result.Priority[i].Value).text(result.Priority[i].Text));
+        //    }
+        //}
+
+
+    }
+
+</script>
+
+
+
+
+
+
